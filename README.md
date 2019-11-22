@@ -1,6 +1,4 @@
-# master 分支说明
-
-## 大家新建自己的分支
+## 66666666666666666
 
 `git checkout -b name-dev`
 
