@@ -1,14 +1,11 @@
-# 说明
-
-黑马面面的前端项目
-
-- 分支login 哈哈哈
+# XXXieChenHao 分支说明
 
 ## 运行
 
 ```sh
-
-npm i
 npm start
-
+// 会同时创建许多子窗口，最小化即可 
+npm stop
+// 结束任务
 ```
+
