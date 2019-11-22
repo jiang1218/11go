@@ -1,6 +1,16 @@
-# XXXieChenHao 分支说明
+# master 分支说明
 
-## 运行
+## 大家新建自己的分支
+
+`git checkout -b name-dev`
+
+在这里面进行修改
+
+`git push origin name-dev`
+
+进行远程仓库的提交
+
+提交后 不要点那个 compare&pull request 什么的
 
 ```sh
 npm start
