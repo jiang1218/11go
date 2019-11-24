@@ -1,21 +1,16 @@
-# master 分支说明
+# XXXieChenHao 分支说明
 
-## 大家新建自己的分支
 
-`git checkout -b name-dev`
 
-在这里面进行修改
+## 🐌🐌项目进展
 
-`git push origin name-dev`
+### 2019-11-24 上午
 
-进行远程仓库的提交
+完成 questions.vue 基础题库组件，页面基本绘制，搜索框功能实现
 
-提交后 不要点那个 compare&pull request 什么的
+完成前后端数据交互，页面渲染，分页渲染
 
-```sh
-npm start
-// 会同时创建许多子窗口，最小化即可 
-npm stop
-// 结束任务
-```
+完成搜索框修改、分页修改局部刷新
+
+ 
 
