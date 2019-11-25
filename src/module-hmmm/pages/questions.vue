@@ -95,12 +95,19 @@
         <el-col :span="6">
           录入人：
           <el-select v-model="searchForm.creatorID">
-            <el-option value="0" label="XXXieChenHao"></el-option>
+            <el-option
+            v-for="item in creatorIDList"
+            :key="item.id"
+            :value="item.id"
+            :label="item.username"
+            ></el-option>
           </el-select>
         </el-col>
         <el-col :span="6">
           二级目录：
-          <el-input v-model="searchForm.catalogID" placeholder="请输入二级目录" style="width: 210px"></el-input>
+          <el-select v-model="searchForm.catalogID">
+            <el-option v-for="(item) in directorList" :key="item.value" :label="item.label" :value="item.value"></el-option>
+          </el-select>
         </el-col>
         <el-col class="col_btn" :span="6" style="float:right">
           <el-button @click="clearForm">清除</el-button>
@@ -110,16 +117,16 @@
 
       <!-- 数据展示区 -->
       <el-table :data="tableData" stripe style="width: 100%" highlight-current-row>
-        <el-table-column prop="id" label="序号" width="50"></el-table-column>
+        <el-table-column type="index" label="序号"></el-table-column>
         <el-table-column prop="number" label="试题编号"></el-table-column>
-        <el-table-column prop="subjectID" label="学科" width="100"></el-table-column>
-        <el-table-column prop="questionType" label="题型"></el-table-column>
+        <el-table-column prop="subjectID" label="学科"></el-table-column>
+        <el-table-column prop="questionType" width="80" label="题型" :formatter="questionTypeFmt"></el-table-column>
         <el-table-column prop="question" label="题干"></el-table-column>
         <el-table-column prop="addDate" label="录入时间"></el-table-column>
-        <el-table-column prop="difficulty" label="难度"></el-table-column>
+        <el-table-column prop="difficulty" width="80" label="难度" :formatter="difficultFmt"></el-table-column>
         <el-table-column prop="tags" label="试题标签"></el-table-column>
         <el-table-column prop="creator" label="录入人" ></el-table-column>
-        <el-table-column label="操作">
+        <el-table-column label="操作" width="240">
           <el-button type="text">预览</el-button>
           <el-button type="text">修改</el-button>
           <el-button type="text">删除</el-button>
@@ -147,7 +154,9 @@
 <script>
 import { simple as subSimple } from '@/api/hmmm/subjects' // 引入学科
 import { simple as tagsSimple } from '@/api/hmmm/tags' // 标签
+import { simple as userSimple } from '@/api/base/users'
 import { provinces, citys } from '@/api/hmmm/citys'
+import {simple as directorSimple} from '@/api/hmmm/directorys'
 import {
   difficulty as difficultyList,
   questionType as questionTypeList,
@@ -155,7 +164,6 @@ import {
 } from '@/api/hmmm/constants' // 引入常量
 
 import { choice } from '@/api/hmmm/questions' // 引入题库 API
-
 export default {
   name: 'QuestionsList',
   data() {
@@ -164,6 +172,8 @@ export default {
       tagsList: [],
       provincesList: [],
       citysList: [],
+      creatorIDList: [],
+      directorList: [],
 
       difficultyList, // 难度下拉菜单
       questionTypeList, // 试题类型下拉菜单
@@ -193,18 +203,22 @@ export default {
     this.getSubjectList()
     this.getTagslist()
     this.getProvincesList()
+    this.getCreatorIDList()
+    this.getDirectorList()
     this.search()
   },
   watch: {
     'searchForm.province'(newV) {
-      if (newV) {
       this.getCityList(newV)
-      }
+    },
+    'searchForm.subjectID'(newV) {
+      this.getDirectorList(newV)
     }
   },
   methods: {
     async getSubjectList() {
       let result = await subSimple()
+      console.log(result.data)
       this.subjectList = result.data
     },
     async getTagslist() {
@@ -218,6 +232,22 @@ export default {
     async getCityList(pname) {
       let result = await citys(pname)
       this.citysList = result
+    },
+    async getCreatorIDList() {
+      let result = await userSimple()
+      this.creatorIDList = result.data
+    },
+    async getDirectorList() {
+      let result = await directorSimple(this.searchForm.subjectID)
+      console.log(result.data)
+      this.directorList = result.data
+    },
+    questionTypeFmt(row, col, cellValue, index) {
+      // 修饰题型为中文
+      return this.questionTypeList[cellValue - 1].label
+    },
+    difficultFmt(row, col, cellValue, index) {
+      return this.difficultyList[cellValue - 1].label
     },
     clearForm() {
       this.$confirm('此操作将会清空所有选择', '是否继续', '提示', {
@@ -239,11 +269,11 @@ export default {
           page: 1,
           pagesize: 10
         }
+        this.search()
       })
     },
     async search() {
       let pro = await choice(this.searchForm)
-      console.log(pro)
       this.tableData = pro.data.items
       this.total = pro.data.counts
     },
